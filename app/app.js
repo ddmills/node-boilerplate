@@ -18,4 +18,4 @@ app.get('/', (request, response) => {
   response.render('index');
 });
 
-const server = app.listen(process.env.port, () => console.log(`listening ${server.address().port}`));
+const server = app.listen(process.env.PORT, () => console.log(`listening ${server.address().port}`));

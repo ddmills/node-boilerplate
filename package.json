@@ -6,7 +6,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build && concurrently \"npm run serve\" \"npm run watch\" -n \"serve,watch\" -c \"yellow.bold,cyan.bold\"",
+    "start": "node build/app.js",
+    "dev": "npm run build && concurrently \"npm run serve\" \"npm run watch\" -n \"serve,watch\" -c \"yellow.bold,cyan.bold\"",
     "serve": "nodemon build/app.js --watch build",
     "clean": "gulp clean",
     "watch": "gulp watch",
