@@ -1,0 +1,42 @@
+{
+  "name": "boilerplate",
+  "version": "0.0.0",
+  "author": "ddmills",
+  "license": "ISC",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build && concurrently \"npm run serve\" \"npm run watch\" -n \"serve,watch\" -c \"yellow.bold,cyan.bold\"",
+    "serve": "nodemon build/app.js --watch build",
+    "clean": "gulp clean",
+    "watch": "gulp watch",
+    "build": "gulp build"
+  },
+  "engines": {
+    "node": "8"
+  },
+  "dependencies": {
+    "express": "^4.15.4",
+    "mustache-express": "^1.2.5"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-source-map-support": "^1.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-es2015-rollup": "^3.0.0",
+    "concurrently": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
+    "gulp-check-filesize": "^2.0.1",
+    "gulp-clean": "^0.3.2",
+    "gulp-file": "^0.3.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sourcemaps": "^2.6.1",
+    "gulp-util": "^3.0.8",
+    "gutil": "^1.6.4",
+    "nodemon": "^1.11.0",
+    "rollup": "^0.47.6",
+    "rollup-plugin-babel": "^3.0.2"
+  }
+}
