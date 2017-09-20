@@ -40,12 +40,10 @@ gulp.task('build:server:js', () => {
     .on('error', function(error) {
       gutil.log(gutil.colors.red('[Compilation Error]'));
       gutil.log(gutil.colors.red(`${error.message}\n`) + error.codeFrame);
-      // gutil.log('\n' + error.codeFrame);
       this.emit('end');
     })
     .pipe(sourcemaps.write())
     .pipe(gulp.dest('build'));
-    // .on('end', done);
 });
 
 gulp.task('build:server:views', () => {

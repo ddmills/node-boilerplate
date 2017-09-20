@@ -16,6 +16,7 @@
     "node": "8"
   },
   "dependencies": {
+    "dotenv": "^4.0.0",
     "express": "^4.15.4",
     "mustache-express": "^1.2.5"
   },
@@ -31,7 +32,6 @@
     "gulp-check-filesize": "^2.0.1",
     "gulp-clean": "^0.3.2",
     "gulp-file": "^0.3.0",
-    "gulp-plumber": "^1.1.0",
     "gulp-sourcemaps": "^2.6.1",
     "gulp-util": "^3.0.8",
     "gutil": "^1.6.4",

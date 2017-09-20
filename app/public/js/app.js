@@ -1,3 +1,3 @@
 import './hello';
 
-console.log('mains');
+console.log('main');
