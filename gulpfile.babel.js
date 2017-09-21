@@ -1,4 +1,5 @@
 const gulp = require('gulp');
+const path = require('path');
 const clean = require('gulp-clean');
 const filesize = require('gulp-check-filesize');
 const sourcemaps = require('gulp-sourcemaps');
@@ -7,20 +8,17 @@ const gutil = require('gulp-util');
 const rollup = require('rollup').rollup;
 const rollupBabel = require('rollup-plugin-babel');
 const file = require('gulp-file');
+const notifier = require('node-notifier');
 
-function handleErrors(task) {
-  return function(done) {
-    var onSuccess = function() {
-      done();
-    };
-    var onError = function(err) {
-      done(err);
-    }
-    var outStream = task(onSuccess, onError);
-    if(outStream && typeof outStream.on === 'function') {
-      outStream.on('end', onSuccess);
-    }
-  }
+function reportError(error) {
+  gutil.log(gutil.colors.red('[ERROR]'));
+  gutil.log(gutil.colors.red(`${error.message}\n`) + error.codeFrame);
+  notifier.notify({
+    title: 'Error!',
+    icon: path.join(__dirname, 'app/public/icon.jpg'),
+    message: error.message,
+    sound: false
+  });
 }
 
 gulp.task('clean', () => {
@@ -38,8 +36,7 @@ gulp.task('build:server:js', () => {
       presets: ['es2015']
     }))
     .on('error', function(error) {
-      gutil.log(gutil.colors.red('[Compilation Error]'));
-      gutil.log(gutil.colors.red(`${error.message}\n`) + error.codeFrame);
+      reportError(error);
       this.emit('end');
     })
     .pipe(sourcemaps.write())
@@ -59,7 +56,8 @@ gulp.task('build:resources', () => {
     .pipe(gulp.dest('build/resources'));
 });
 
-gulp.task('build:client:js', handleErrors(() => {
+gulp.task('build:client:js', () => {
+  console.log('build client');
   return rollup({
     entry: 'app/public/js/app.js',
     plugins: [
@@ -81,10 +79,8 @@ gulp.task('build:client:js', handleErrors(() => {
   }).then(generated => {
     return file('app.js', generated.code, { src: true })
       .pipe(gulp.dest('build/public/js'));
-  }).catch(err => {
-    console.log('ERROR', err);
-  });
-}));
+  }).catch(error => reportError(error));
+});
 
 gulp.task('build:client', ['build:client:js']);
 gulp.task('build:server', ['build:server:js', 'build:server:views']);

@@ -1,3 +1,3 @@
-import './hello';
+import message from './hello';
 
-console.log('main');
+console.log(message);
