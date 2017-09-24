@@ -1,3 +1,4 @@
+require('dotenv').config();
 const gulp = require('gulp');
 const path = require('path');
 const clean = require('gulp-clean');
@@ -13,6 +14,7 @@ const rollup = require('rollup-stream');
 const notifier = require('node-notifier');
 const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
+const browsersync = require('browser-sync');
 
 function reportError(error) {
   gutil.log(gutil.colors.red('[ERROR]'));
@@ -79,7 +81,6 @@ gulp.task('build:client:js', () => {
     .pipe(buffer())
     .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(babel())
-    .pipe(filesize())
     .pipe(uglifyjs())
     .pipe(filesize())
     .pipe(sourcemaps.write('.'))
@@ -90,10 +91,15 @@ gulp.task('build:client', ['build:client:js', 'build:client:sass']);
 gulp.task('build:server', ['build:server:js', 'build:server:views']);
 
 gulp.task('watch', () => {
-  gulp.watch('app/public/**/*.js', ['build:client:js']);
+  browsersync({
+    proxy: `localhost:${process.env.PORT}`,
+    open: false
+  });
+
+  gulp.watch('app/public/**/*.js', ['build:client:js', browsersync.reload]);
   gulp.watch(['app/**/*.js', '!app/public/**'], ['build:server:js']);
-  gulp.watch('app/views/**/*.mustache', ['build:server:views']);
-  gulp.watch('app/public/**/*.scss', ['build:client:sass']);
+  gulp.watch('app/views/**/*.mustache', ['build:server:views', browsersync.reload]);
+  gulp.watch('app/public/**/*.scss', ['build:client:sass', browsersync.reload]);
 });
 
 gulp.task('build', ['build:resources', 'build:server', 'build:client']);
