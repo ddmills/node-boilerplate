@@ -1,6 +1,9 @@
 const gulp = require('gulp');
 const path = require('path');
 const clean = require('gulp-clean');
+const sass = require('gulp-sass');
+const autoprefixer = require('gulp-autoprefixer');
+const uglifycss = require('gulp-uglifycss');
 const filesize = require('gulp-check-filesize');
 const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
@@ -56,6 +59,17 @@ gulp.task('build:resources', () => {
     .pipe(gulp.dest('build/resources'));
 });
 
+gulp.task('build:client:sass', () => {
+  return gulp
+    .src('app/public/sass/app.scss')
+    .pipe(sourcemaps.init())
+    .pipe(sass().on('error', sass.logError))
+    .pipe(sourcemaps.write())
+    .pipe(autoprefixer())
+    .pipe(uglifycss())
+    .pipe(gulp.dest('build/public/css'));
+});
+
 gulp.task('build:client:js', () => {
   console.log('build client');
   return rollup({
@@ -82,13 +96,14 @@ gulp.task('build:client:js', () => {
   }).catch(error => reportError(error));
 });
 
-gulp.task('build:client', ['build:client:js']);
+gulp.task('build:client', ['build:client:js', 'build:client:sass']);
 gulp.task('build:server', ['build:server:js', 'build:server:views']);
 
 gulp.task('watch', () => {
   gulp.watch('app/public/**/*.js', ['build:client:js']);
   gulp.watch(['app/**/*.js', '!app/public/**'], ['build:server:js']);
   gulp.watch('app/views/**/*.mustache', ['build:server:views']);
+  gulp.watch('app/public/**/*.scss', ['build:client:sass']);
 });
 
 gulp.task('build', ['build:resources', 'build:server', 'build:client']);
