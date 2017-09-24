@@ -1,3 +1,3 @@
 import message from './hello';
 
-console.log(message);
+document.querySelector('h1').innerHTML = message;

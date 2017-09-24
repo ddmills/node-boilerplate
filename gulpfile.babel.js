@@ -4,14 +4,15 @@ const clean = require('gulp-clean');
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
 const uglifycss = require('gulp-uglifycss');
+const uglifyjs = require('gulp-uglify');
 const filesize = require('gulp-check-filesize');
 const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
 const gutil = require('gulp-util');
-const rollup = require('rollup').rollup;
-const rollupBabel = require('rollup-plugin-babel');
-const file = require('gulp-file');
+const rollup = require('rollup-stream');
 const notifier = require('node-notifier');
+const source = require('vinyl-source-stream');
+const buffer = require('vinyl-buffer');
 
 function reportError(error) {
   gutil.log(gutil.colors.red('[ERROR]'));
@@ -43,6 +44,7 @@ gulp.task('build:server:js', () => {
       this.emit('end');
     })
     .pipe(sourcemaps.write())
+    .pipe(filesize())
     .pipe(gulp.dest('build'));
 });
 
@@ -67,33 +69,21 @@ gulp.task('build:client:sass', () => {
     .pipe(sourcemaps.write())
     .pipe(autoprefixer())
     .pipe(uglifycss())
+    .pipe(filesize())
     .pipe(gulp.dest('build/public/css'));
 });
 
 gulp.task('build:client:js', () => {
-  console.log('build client');
-  return rollup({
-    entry: 'app/public/js/app.js',
-    plugins: [
-      rollupBabel({
-        presets: [[
-          'es2015', {
-            modules: false
-          }
-        ]],
-        sourceMaps: true,
-        exclude: 'node_modules/**'
-      })
-    ]
-  }).then(bundle => {
-    return bundle.generate({
-      format: 'umd',
-      moduleName: 'app'
-    })
-  }).then(generated => {
-    return file('app.js', generated.code, { src: true })
-      .pipe(gulp.dest('build/public/js'));
-  }).catch(error => reportError(error));
+  return rollup('rollup.config.js')
+    .pipe(source('app.js'))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({ loadMaps: true }))
+    .pipe(babel())
+    .pipe(filesize())
+    .pipe(uglifyjs())
+    .pipe(filesize())
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest('build/public/js'));
 });
 
 gulp.task('build:client', ['build:client:js', 'build:client:sass']);
